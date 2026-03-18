@@ -22,6 +22,16 @@ router.get("/users", async (req, res) => {
     res.json(usersDb().get());
 });
 
+router.get("/users/:id", async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const user = usersDb({ id: userId }).first();
+    if (user) {
+        res.json(user);
+    } else {
+        res.status(404).json({ error: "User not found" });
+    }
+});
+
 router.get("/posts", async (req, res) => {
     res.json(postsDb().get());
 });
@@ -32,14 +42,13 @@ router.get("/users/:id/posts", async (req, res) => {
     res.json(userPosts);
 });
 
-router.get("/posts/:id", async (req, res) => {  
+router.get("/posts/:id", async (req, res) => {
     const postId = parseInt(req.params.id);
     const post = postsDb({ id: postId }).first();
     const author = usersDb({ id: post.userId }).first();
-    post.author = author;
-    
+
     if (post) {
-        res.json(post);
+        res.json({ ...post, author });
     } else {
         res.status(404).json({ error: "Post not found" });
     }
