@@ -1,6 +1,6 @@
 import process from 'node:process';
 
-const expressPlugin = ({ entry }) => {
+const expressPlugin = ({ entry, appName = "app" }) => {
   const isDev = process.env.NODE_ENV !== 'production';
 
   return {
@@ -20,7 +20,7 @@ const expressPlugin = ({ entry }) => {
     configureServer: async (server) => {
       if (isDev) {
         const module = await server.ssrLoadModule(entry);
-        const app = await module.app || await module.default;
+        const app = await module[appName] || await module.default;
         if (app) {
           server.middlewares.use(app);
         }
