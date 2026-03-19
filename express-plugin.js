@@ -19,10 +19,15 @@ const expressPlugin = ({ entry, appName = "app" }) => {
     }),
     configureServer: async (server) => {
       if (isDev) {
-        const module = await server.ssrLoadModule(entry);
-        const app = await module[appName] || await module.default;
-        if (app) {
-          server.middlewares.use(app);
+        try {
+          const module = await server.ssrLoadModule(entry);
+          const app = await module[appName] || await module.default;
+          if (app) {
+            server.middlewares.use(app);
+          }
+        } catch (error) {
+          console.error('Error loading Express module:', error.message);
+          console.error('Make sure your Express server is properly exporting the app');
         }
       }
     }
